@@ -41,3 +41,12 @@ pip install -r requirements.txt
 5. Add tests to verify key behaviors.
 6. Connect your logic to the Streamlit UI in `app.py`.
 7. Refine UML so it matches what you actually built.
+
+## Smarter Scheduling
+
+The scheduler in `pawpal_system.py` includes four algorithmic improvements beyond basic priority ordering:
+
+- **Sort by time** -- Tasks with a `scheduled_time` (`"HH:MM"` format) are sorted chronologically using a lambda key that compares time strings lexicographically, with priority score as a tiebreaker.
+- **Preference-aware scoring** -- `Task.schedule_score()` combines the base priority (1-3) with a +2 bonus when the task category matches an owner preference, so preferred care areas float to the top.
+- **Recurring tasks** -- When a `"daily"` or `"weekly"` task is marked complete, `mark_complete()` uses `timedelta` to compute the next date and automatically creates a new Task instance assigned to the same pet.
+- **Conflict detection** -- `Scheduler.detect_conflicts()` performs a pairwise overlap check (`a_start < b_end and b_start < a_end`) on all timed tasks and returns human-readable warnings identifying same-pet and cross-pet conflicts without crashing the program.

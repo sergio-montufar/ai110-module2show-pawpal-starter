@@ -34,6 +34,7 @@ Yes, my design changed. Scheduler is locked to only one pet. If an owner has two
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
 
+The tradeoff that scheduler makes is to move the scoring functionality to Task.schedule_score(). The tradeoff is reasonable because this is a single responsibility and can be reused in filters and sorts in other parts of the code.
 ---
 
 ## 3. AI Collaboration
