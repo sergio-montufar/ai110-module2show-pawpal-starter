@@ -50,3 +50,34 @@ The scheduler in `pawpal_system.py` includes four algorithmic improvements beyon
 - **Preference-aware scoring** -- `Task.schedule_score()` combines the base priority (1-3) with a +2 bonus when the task category matches an owner preference, so preferred care areas float to the top.
 - **Recurring tasks** -- When a `"daily"` or `"weekly"` task is marked complete, `mark_complete()` uses `timedelta` to compute the next date and automatically creates a new Task instance assigned to the same pet.
 - **Conflict detection** -- `Scheduler.detect_conflicts()` performs a pairwise overlap check (`a_start < b_end and b_start < a_end`) on all timed tasks and returns human-readable warnings identifying same-pet and cross-pet conflicts without crashing the program.
+
+## Testing PawPal+
+
+### Running tests
+
+```bash
+python -m pytest
+```
+
+For verbose output showing each test name and result:
+
+```bash
+python -m pytest -v
+```
+
+### What the tests cover
+
+The test suite in `tests/test_pawpal.py` verifies eight behaviors across four areas:
+
+| Area | Tests | What they check |
+|------|-------|-----------------|
+| **Core operations** | `test_mark_complete_changes_status`, `test_add_task_increases_pet_task_count` | Marking a task complete flips its status; adding tasks grows the pet's task list |
+| **Sorting correctness** | `test_schedule_sorted_by_time`, `test_schedule_tiebreak_by_score` | Tasks are scheduled in chronological order; ties are broken by priority + preference score |
+| **Recurrence logic** | `test_daily_recurrence_creates_next_day_task`, `test_onetime_task_returns_none` | Daily tasks generate a next-day follow-up on completion; one-time tasks do not |
+| **Conflict detection** | `test_detect_conflicts_overlapping_tasks`, `test_no_conflict_for_adjacent_tasks` | Overlapping time ranges produce a warning; back-to-back tasks do not |
+
+### Confidence level
+
+**Reliability: 4/5 stars**
+
+The tests cover the core scheduling logic, recurrence, and conflict detection -- the features most likely to break. One star is withheld because edge cases like zero available minutes, tasks with no scheduled time, and multi-pet cross-conflict scenarios are not yet covered.
