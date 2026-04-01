@@ -7,12 +7,18 @@
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
 
-My initial UML design will include 
+My initial UML design will include four classes: Owner, Pet, Task, Scheduler.
+The owner has the ability to modify the preference list and change the daily time budget. They have also have total minutes available for pet care in a day. 
+Pet has the ability to get a summary of the readable description of itself. It also displays the name, species, the age, and its owner.
+Task has the ability to convert a priority string to a numeric value. It has a title, duration in minutes, priority, and category.
+Lastly, the scheduler is able too add tasks, remove tasks, generate schedules, explain said schedules, and return the current schedule.
 
 **b. Design changes**
 
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
+
+Yes, my design changed. Scheduler is locked to only one pet. If an owner has two pets, there would have to be two separate Scheduler instances with no way to coordinate shared time across them. 
 
 ---
 
