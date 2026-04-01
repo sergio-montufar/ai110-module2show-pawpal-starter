@@ -44,10 +44,18 @@ The tradeoff that scheduler makes is to move the scoring functionality to Task.s
 - How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
 - What kinds of prompts or questions were most helpful?
 
+I used Claude Code across four phases: testing (identifying edge cases and drafting test functions), UI integration, UML refinement, and documentation (adding Features and Testing sections to the README).
+
+The prompts and questions that were most helpful were asking "what are the most important edge cases?" before writing tests. This produced a prioritized plan instead of jumping into code. I also Scoped requests like "update app.py to use the Scheduler class" which kept changes focused. 
+
 **b. Judgment and verification**
 
 - Describe one moment where you did not accept an AI suggestion as-is.
 - How did you evaluate or verify what the AI suggested?
+
+When the AI generated a PlantUML file, I rejected the file creation and told it not to write it into a new code file. I wanted the code as text you could copy instead. I evaluated the suggestion by recognizing that a .puml file in the project wasn't what was needed, and redirected the AI to just output it inline. I  then followed up by asking for a Mermaid.js version instead, which better fit the workflow.
+
+This shows I was reviewing each AI action before accepting it, not just auto-approving every tool call.
 
 ---
 
@@ -58,10 +66,22 @@ The tradeoff that scheduler makes is to move the scoring functionality to Task.s
 - What behaviors did you test?
 - Why were these tests important?
 
+The behaviors that I tested were sorting correctness, daily recurrence, one-time tasks, conflict detection, and adjacent boundaries.
+
+These tests were import because sorting is the foundation of the scheduler; If tasks come out in the wrong order, every schedule is wrong
+Recurrence has the most moving parts (timedelta math, creating a new Task, re-assigning it to the pet) so it's the most likely place for a bug
+Conflict detection relies on an inequality (a_start < b_end and b_start < a_end) where an off-by-one error would either miss real conflicts or flag false ones -- the adjacent-boundary test specifically guards against that
+
+
 **b. Confidence**
 
 - How confident are you that your scheduler works correctly?
 - What edge cases would you test next if you had more time?
+
+My confidence level is a 4 out of 5 because the tests cover the core logic paths: sorting, recurrence, and conflict detection all pass. The main risk is untested boundary conditions.
+
+The edge cases I would test next are Zero available minutes. Doe|s the scheduler return an empty schedule, or does something break?
+I also want to test Pet with no tasks. This would confirm the scheduler handles empty task lists gracefully
 
 ---
 
@@ -71,10 +91,16 @@ The tradeoff that scheduler makes is to move the scoring functionality to Task.s
 
 - What part of this project are you most satisfied with?
 
+I think the test suite is the strongest part. It's 8 tests across 4 areas all passed on the first run, covering sorting, recurrence, and conflict detection. Having tests in place also made it safe to update app.py without worrying about breaking the scheduling logic.
+
 **b. What you would improve**
 
 - If you had another iteration, what would you improve or redesign?
 
+The generate_schedule() method uses a simple greedy algorithm that skips tasks if they don't fit. With another iteration, you could redesign it to try rearranging shorter tasks to fill gaps, or warn the user which high-priority tasks were dropped so they can adjust their available time. The UI could also let users drag to reorder tasks manually instead of relying entirely on the algorithm.
+
 **c. Key takeaway**
 
 - What is one important thing you learned about designing systems or working with AI on this project?
+
+Designing the UML first and then comparing it against the final code revealed how much a system changes during implementation. The original diagram had direct arrows from Scheduler to Pet and Task that didn't exist in the code. The lesson: treat the diagram as a living document, not a contract. Using AI to do a systematic diagram-vs-code comparison at the end was an efficient way to catch those gaps.

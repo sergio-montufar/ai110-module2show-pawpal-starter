@@ -42,6 +42,22 @@ pip install -r requirements.txt
 6. Connect your logic to the Streamlit UI in `app.py`.
 7. Refine UML so it matches what you actually built.
 
+## Features
+
+1. **Sorting by time** -- Tasks are sorted chronologically by their `scheduled_time` (HH:MM). Tasks without a time slot are placed at the end. When two tasks share the same time, the scheduler breaks the tie using a computed score based on priority and owner preferences.
+
+2. **Preference-aware scoring** -- Each task receives a scheduling score: a base priority value (low=1, medium=2, high=3) plus a +2 bonus if its category matches one of the owner's preferred categories. Higher-scoring tasks are scheduled first when times are equal.
+
+3. **Greedy time-budget fitting** -- The scheduler walks through sorted tasks and greedily assigns each one if its duration fits within the owner's remaining available minutes. Tasks that don't fit are skipped and reported at the end.
+
+4. **Daily and weekly recurrence** -- Completing a task with `frequency="daily"` or `"weekly"` automatically creates a new task with the next `scheduled_date` (current date + 1 day or + 7 days). The new task is assigned to the same pet and starts as incomplete. One-time tasks produce no follow-up.
+
+5. **Conflict detection** -- Before displaying the schedule, the app checks every pair of timed tasks for overlap using the condition `a_start < b_end and b_start < a_end`. Conflicts are surfaced as warnings that identify both tasks, their time ranges, and whether they belong to the same pet or different pets.
+
+6. **Schedule reasoning** -- Each scheduled task includes an explanation string describing why it was placed in that position (priority score, preference match, pet assignment), viewable in an expandable "Why this order?" section.
+
+7. **Multi-pet support** -- An owner can have multiple pets, each with their own task list. The scheduler pulls tasks from all pets via `Owner.get_all_tasks()` and interleaves them into a single unified daily plan.
+
 ## Smarter Scheduling
 
 The scheduler in `pawpal_system.py` includes four algorithmic improvements beyond basic priority ordering:
@@ -81,3 +97,9 @@ The test suite in `tests/test_pawpal.py` verifies eight behaviors across four ar
 **Reliability: 4/5 stars**
 
 The tests cover the core scheduling logic, recurrence, and conflict detection -- the features most likely to break. One star is withheld because edge cases like zero available minutes, tasks with no scheduled time, and multi-pet cross-conflict scenarios are not yet covered.
+
+
+
+# DEMO
+
+<a href="uml_final.png" target="_blank"><img src='uml_final.png' title='PawPal App' width='' alt='PawPal App' class='center-block' /></a>
